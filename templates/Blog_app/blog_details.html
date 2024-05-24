@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title_block %} {{ blog.blog_title }} {% endblock %}
+{% block body_block %}
+<div class="row">
+    <div class="col-sm-6">
+        <h2>{{ blog.blog_title }}</h2>
+        <h4>Post by: @{{ blog.author }}</h4>
+        <i><h6>Publish on: {{ blog.publish_date }}</h6></i>
+        <i><h6>Update on: {{ blog.update_date }}</h6></i>
+        <h6>{{ blog.liked_blog.count }} Like | {{ blog.blog_comment.count }} Comment</h6>
+    </div>
+    <div class="col-sm-6">
+        <img src="/media/profile/s-4-episode-8-sm.jpg" alt="{{ blog.blog_title }}" width="100%">
+    </div>
+    <p>{{ blog.blog_content|linebreaks }}</p>
+    <hr>
+</div>
+{% if not user.has_liked_blog(blog) %}
+<a href="{% url 'Blog_app:liked_post' pk=blog.pk %}">
+    <i class="fa-solid fa-thumbs-up"></i>
+</a>
+{% else %}
+<a href="{% url 'Blog_app:unliked_post' pk=blog.pk %}">
+    <i class="fa-solid fa-thumbs-down"></i>
+</a>
+{% endif %}
+<div class="row">
+    <div class="col-sm-6">
+        <hr>
+        <h5>Comments: </h5>
+        {% for comment in blog.blog_comment.all %}
+        <p><a href="{% url 'some_url_for_comment' %}">@{{ comment.user }}</a>: {{ comment.comment }}</p>
+        {% endfor %}
+    </div>
+    <div class="col-sm-6">
+        <form method="POST">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit" name="button" class="btn btn-primary btn-sm">Comment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
